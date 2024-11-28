@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">AllTicks</string>
+    <string name="login">Login</string>
+    <string name="welcome_to">Welcome to </string>
+    <string name="sing_up">Sing up</string>
+    <string name="email">Email</string>
+    <string name="user_name">Username</string>
+    <string name="password">Password</string>
+    <string name="proposal_sing_up">Don`t have account, sing up</string>
+    <string name="proposal_log_in">Already have account, log in</string>
+    <string name="profile">Profile</string>
+</resources>
