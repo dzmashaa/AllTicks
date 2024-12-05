@@ -1,4 +1,4 @@
-package com.example.allticks.screens.login
+package com.example.allticks.screens.signup
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -20,40 +20,43 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModel
 import com.example.allticks.R
 import com.example.allticks.common.composable.BasicButton
 import com.example.allticks.common.composable.BasicTextButton
 import com.example.allticks.common.composable.EmailField
 import com.example.allticks.common.composable.PasswordField
+import com.example.allticks.common.composable.RepeatPasswordField
 import com.example.allticks.ui.theme.AllTicksTheme
 import com.example.allticks.ui.theme.backgroundLight
 import com.example.allticks.ui.theme.primaryLight
 
 @Composable
-fun LoginScreen(
+fun SignUpScreen(
     openAndPopUp: (String, String) -> Unit,
-    viewModel: LoginViewModel = hiltViewModel()
-){
+    viewModel: SignUpViewModel = hiltViewModel()
+) {
     val uiState by viewModel.uiState
-    LoginScreenContent(
+
+    SignUpScreenContent(
         uiState = uiState,
         onEmailChange = viewModel::onEmailChange,
         onPasswordChange = viewModel::onPasswordChange,
+        onRepeatPasswordChange = viewModel::onRepeatPasswordChange,
+        onSignUpClick = { viewModel.onSignUpClick(openAndPopUp) },
         onLogInClick = { viewModel.onLogInClick(openAndPopUp) },
-        onSignUpClick = { viewModel.onSignUpClick(openAndPopUp)}
     )
 }
 
 @Composable
-fun LoginScreenContent(
+fun SignUpScreenContent(
     modifier: Modifier = Modifier,
-    uiState: LoginUiState,
+    uiState: SignUpUiState,
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
-    onLogInClick: () -> Unit,
-    onSignUpClick: () -> Unit
-){
+    onRepeatPasswordChange: (String) -> Unit,
+    onSignUpClick: () -> Unit,
+    onLogInClick:() -> Unit
+) {
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -67,33 +70,39 @@ fun LoginScreenContent(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ){
-        Text(text = stringResource(R.string.login),
+        Text(text = stringResource(R.string.sing_up),
             style = MaterialTheme.typography.titleLarge)
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
         EmailField(uiState.email, onEmailChange)
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
+
         PasswordField(uiState.password, onPasswordChange)
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
+
+        RepeatPasswordField(uiState.repeatPassword, onRepeatPasswordChange)
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
-        BasicButton(R.string.login) { onLogInClick() }
-        BasicTextButton(text = R.string.proposal_sing_up) {
-            onSignUpClick()
+
+        BasicButton(R.string.create_account) { onSignUpClick() }
+        BasicTextButton(text = R.string.proposal_log_in) {
+            onLogInClick()
         }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun LoginScreenPreview() {
-    val uiState = LoginUiState(
+fun SignUpScreenPreview() {
+    val uiState = SignUpUiState(
         email = "email@test.com"
     )
     AllTicksTheme {
-        LoginScreenContent(
+        SignUpScreenContent(
             uiState = uiState,
             onEmailChange = { },
             onPasswordChange = { },
-            onLogInClick = { },
-            onSignUpClick = {}
+            onRepeatPasswordChange = { },
+            onSignUpClick = { },
+            onLogInClick = {}
         )
     }
 }

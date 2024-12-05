@@ -1,92 +1,141 @@
 package com.example.allticks
 
-import android.annotation.SuppressLint
-import android.widget.Toast
-import androidx.annotation.StringRes
-import androidx.compose.foundation.layout.fillMaxSize
+import android.content.res.Resources
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Snackbar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.allticks.screens.auth.AuthorizationScreen
-import com.example.allticks.pages.ProfileScreen
-import com.example.allticks.pages.WelcomeScreen
+import androidx.navigation.navArgument
+import com.example.allticks.common.navigationBar.BottomNavigationBar
+import com.example.allticks.common.navigationBar.getBottomBarScreens
+import com.example.allticks.common.snackbar.SnackbarManager
+import com.example.allticks.screens.calendar.CalendarScreen
+import com.example.allticks.screens.login.LoginScreen
+import com.example.allticks.screens.profile.ProfileScreen
+import com.example.allticks.screens.signup.SignUpScreen
+import com.example.allticks.screens.splash.SplashScreen
+import com.example.allticks.screens.task.TaskScreen
+import com.example.allticks.screens.welcome.WelcomeScreen
+import com.example.allticks.ui.theme.AllTicksTheme
+import com.example.allticks.ui.theme.primaryLight
+import kotlinx.coroutines.CoroutineScope
+import com.example.allticks.screens.edit.EditTaskScreen
 
-enum class AllTicksScreen(@StringRes val title: Int){
-    Start(title = R.string.app_name),
-    LogIn(title = R.string.login),
-    SingUp(title = R.string.sing_up),
-    Profile(title = R.string.profile)
+
+@Composable
+fun AllTicksApp() {
+    AllTicksTheme {
+        val snackbarHostState = remember { SnackbarHostState() }
+        val appState = rememberAppState(snackbarHostState)
+        val currentRoute = appState.navController.currentBackStackEntryAsState().value?.destination?.route
+
+        Scaffold(
+            snackbarHost = {
+                SnackbarHost(
+                    hostState = snackbarHostState,
+                    modifier = Modifier.padding(16.dp),
+                    snackbar = { snackbarData ->
+                        Snackbar(snackbarData,
+                            containerColor = primaryLight,
+                            shape = RoundedCornerShape(8.dp))
+                    }
+                )
+            },
+            bottomBar = {
+                if (getBottomBarScreens().any { it.route == currentRoute }) {
+                    BottomNavigationBar(navController = appState.navController,
+                        appState = appState)
+                }
+            }
+        ) { innerPaddingModifier ->
+            NavHost(
+                navController = appState.navController,
+                startDestination = SPLASH_SCREEN,
+                modifier = Modifier.padding(innerPaddingModifier)
+            ) {
+                allTicksGraph(appState)
+            }
+        }
+    }
+
 }
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun AllTicksApp(authViewModel: AuthViewModel = viewModel(), navController: NavHostController = rememberNavController(), modifier: Modifier = Modifier){
-    val backStackEntry by navController.currentBackStackEntryAsState()
-    val currentScreen = AllTicksScreen.valueOf(
-        backStackEntry?.destination?.route ?: AllTicksScreen.Start.name
-    )
-    val authState = authViewModel.authState.observeAsState()
-
-    val context = LocalContext.current
-    LaunchedEffect(authState.value) {
-        when(authState.value){
-            is AuthState.Authenticated -> navController.navigate(AllTicksScreen.Profile.name)
-            is AuthState.Error -> Toast.makeText(context, (authState.value as AuthState.Error).message, Toast.LENGTH_SHORT).show()
-            else -> Unit
-        }
-
-    }
-    Scaffold {
-            innerPadding ->
-        NavHost(navController = navController, startDestination = AllTicksScreen.Start.name){
-            composable(route = AllTicksScreen.Start.name){
-                WelcomeScreen(
-                    onSingUpButtonClicked =  {
-                        navController.navigate(AllTicksScreen.SingUp.name)
-                    },
-                    onLogInButtonClicked = {
-                        navController.navigate(AllTicksScreen.LogIn.name)
-                    },
-                    modifier = Modifier
-                        .fillMaxSize()
-                )
-            }
-            composable(route = AllTicksScreen.SingUp.name){
-                AuthorizationScreen(
-                    true,
-                    onProposalButtonClicked =  {
-                        navController.navigate(AllTicksScreen.LogIn.name)
-                    },
-                    onButtonClicked = {email, password ->
-                        authViewModel.signup(email, password)
-                    },
-                )
-            }
-            composable(route = AllTicksScreen.LogIn.name){
-                AuthorizationScreen(
-                    false,
-                    onProposalButtonClicked =  {
-                        navController.navigate(AllTicksScreen.SingUp.name)
-                    },
-                    onButtonClicked = {email, password ->
-                        authViewModel.login(email, password)
-                    },
-                )
-            }
-            composable("profile"){
-                ProfileScreen(navController = navController, authViewModel = authViewModel )
-            }
-        }
+fun rememberAppState(
+    snackbarHostState: SnackbarHostState,
+    navController: NavHostController = rememberNavController(),
+    snackbarManager: SnackbarManager = SnackbarManager,
+    resources: Resources = resources(),
+    coroutineScope: CoroutineScope = rememberCoroutineScope()
+) =
+    remember(snackbarHostState, navController, snackbarManager, resources, coroutineScope) {
+        AllTicksAppState(
+            snackbarHostState,
+            navController,
+            snackbarManager,
+            resources,
+            coroutineScope
+        )
     }
 
+@Composable
+@ReadOnlyComposable
+fun resources(): Resources {
+    LocalConfiguration.current
+    return LocalContext.current.resources
+}
+
+fun NavGraphBuilder.allTicksGraph(appState: AllTicksAppState) {
+    composable(SPLASH_SCREEN) {
+        SplashScreen(openAndPopUp = { route, popUp -> appState.navigateAndPopUp(route, popUp) })
+    }
+    composable(WELCOME_SCREEN) {
+        WelcomeScreen(
+            openScreen = { route -> appState.navigate(route) },
+            openAndPopUp = { route, popUp -> appState.navigateAndPopUp(route, popUp) })
+    }
+    composable(LOGIN_SCREEN) {
+        LoginScreen(openAndPopUp = { route, popUp -> appState.navigateAndPopUp(route, popUp) })
+    }
+    composable(SIGN_UP_SCREEN) {
+        SignUpScreen(openAndPopUp = { route, popUp -> appState.navigateAndPopUp(route, popUp) })
+    }
+    composable(PROFILE_SCREEN) {
+        ProfileScreen(
+            restartApp = { route -> appState.clearAndNavigate(route) },
+            openScreen = { route -> appState.navigate(route) })
+    }
+    composable(TASKS_SCREEN) {
+        TaskScreen(openScreen = { route -> appState.navigate(route) })
+    }
+    composable(CALENDAR_SCREEN) {
+        CalendarScreen()
+    }
+    composable(
+        route = "$EDIT_TASK_SCREEN$TASK_ID_ARG",
+    arguments = listOf(navArgument(TASK_ID) {
+        nullable = true
+        defaultValue = null
+    })
+    ) {
+        EditTaskScreen(
+            popUpScreen = { appState.popUp() }
+        )
+    }
 }

@@ -6,7 +6,37 @@
     <string name="email">Email</string>
     <string name="user_name">Username</string>
     <string name="password">Password</string>
+    <string name="password_repeat">Repeat password</string>
+    <string name="create_account">Create account</string>
     <string name="proposal_sing_up">Don`t have account, sing up</string>
     <string name="proposal_log_in">Already have account, log in</string>
+    <string name="proposal_log_in_anonym">Continue as guest</string>
     <string name="profile">Profile</string>
+    <string name="generic_error">Something wrong happened. Please try again.</string>
+
+    <string name="empty_password_error">Password can not be empty</string>
+    <string name="email_error">Please insert a valid email</string>
+    <string name="password_error">Your password should be at least six characters long an...</string>
+    <string name="password_match_error">Passwords do not match\n</string>
+    <string name="login_anonymously">Log in anonymously\n</string>
+    <string name="tasks">Tasks</string>
+    <string name="calendar">Calendar\n</string>
+    <string name="not_authorized">You are not authorized</string>
+    <string name="sign_out">Sign out</string>
+    <string name="sign_out_title">Sing out?</string>
+    <string name="sign_out_description">You will have to sign in again to see your tasks</string>
+    <string name="cancel">Cancel</string>
+    <string name="try_again">Try again</string>
+    <string name="delete_account">Delete account</string>
+    <string name="delete_account_title">Delete account?</string>
+    <string name="delete_account_description">You will lose all your tasks and your account will be deleted. This action is irreversible</string>
+    <string name="delete">Delete</string>
+    <string name="edit_task">Edit task</string>
+    <string name="title">Title</string>
+    <string name="description">Description</string>
+    <string name="date">Date</string>
+    <string name="time">Time</string>
+    <string name="create">Create</string>
+    <string name="save">Save</string>
+    <string name="priority">Priority</string>
 </resources>
