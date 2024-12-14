@@ -7,10 +7,12 @@ import com.example.allticks.model.service.AccountService
 import com.example.allticks.model.service.StorageService
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.dataObjects
+import com.google.firebase.firestore.snapshots
 import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -25,7 +27,16 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
             auth.currentUser.flatMapLatest { user ->
                 firestore.collection(TASK_COLLECTION)
                     .whereEqualTo(USER_ID_FIELD, user.id)
-                    .dataObjects()
+//                    .dataObjects()
+                    .snapshots()
+                    .map { snapshot ->
+                        snapshot.toObjects(Task::class.java) // Перетворюємо документи в об'єкти Task
+                    }
+                    .map { tasks ->
+                        tasks.sortedWith(compareBy<Task> { it.completed } // Сортуємо по полю completed (false будуть першими)
+                            .thenByDescending { it.createdAt } // Потім сортуємо по полю createdAt (новіші будуть першими)
+                        )
+                    }
             }
 
 
@@ -35,7 +46,7 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
         }
 
     override suspend fun save(task: Task): String {
-        val taskWithUserId = task.copy(userId = auth.currentUserId)
+        val taskWithUserId = task.copy(userId = auth.currentUserId, createdAt = System.currentTimeMillis())
         return firestore.collection(TASK_COLLECTION).add(taskWithUserId).await().id
     }
 
