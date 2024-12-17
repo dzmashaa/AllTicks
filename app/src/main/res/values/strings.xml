@@ -41,4 +41,6 @@
     <string name="priority">Priority</string>
     <string name="all">All</string>
     <string name="filter_by">Filter by</string>
+    <string name="recovery_email_sent">Check your inbox for the recovery email</string>
+    <string name="forgot_password">Forgot password?</string>
 </resources>

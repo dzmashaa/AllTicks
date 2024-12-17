@@ -2,6 +2,7 @@ package com.example.allticks.screens.task
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -144,14 +145,22 @@ fun TasksScreenContent(
                 TaskPriority.entries.forEach { priority ->
                     if (priority != TaskPriority.None) {
                         DropdownMenuItem(
-                            text = { Text(priority.label) },
+                            text = {
+                                Row(verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween) {
+                                    Text(text = priority.label)
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Icon(painter = painterResource(id = R.drawable.baseline_star_24),
+                                        contentDescription = stringResource(id = R.string.priority),
+                                        tint = priority.color)
+                                }},
                             onClick = {
                                 onPrioritySelected(priority)
                                 expanded = false
                             })
                     }
                 }
-                }
+            }
                 LazyColumn(
                     modifier = Modifier.fillMaxSize()
                 ){

@@ -30,11 +30,11 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
 //                    .dataObjects()
                     .snapshots()
                     .map { snapshot ->
-                        snapshot.toObjects(Task::class.java) // Перетворюємо документи в об'єкти Task
+                        snapshot.toObjects(Task::class.java)
                     }
                     .map { tasks ->
-                        tasks.sortedWith(compareBy<Task> { it.completed } // Сортуємо по полю completed (false будуть першими)
-                            .thenByDescending { it.createdAt } // Потім сортуємо по полю createdAt (новіші будуть першими)
+                        tasks.sortedWith(compareBy<Task> { it.completed }
+                            .thenByDescending { it.createdAt }
                         )
                     }
             }

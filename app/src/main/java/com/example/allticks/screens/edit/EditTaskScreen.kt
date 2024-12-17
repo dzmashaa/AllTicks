@@ -24,6 +24,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -54,13 +55,22 @@ import com.example.allticks.ui.theme.primaryLight
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 
 @Composable
 fun EditTaskScreen(
+    dueDate: String?,
     popUpScreen: () -> Unit,
     viewModel: EditTaskViewModel = hiltViewModel()
 ) {
+    LaunchedEffect(dueDate) {
+        if (dueDate != null && viewModel.task.value.id.isBlank()) {
+            SimpleDateFormat("EEE, d MMM yyyy", Locale.ENGLISH).parse(dueDate)
+                ?.let { viewModel.onDateChange(it.time) }
+        }
+    }
     val task by viewModel.task
     val activity = LocalContext.current as AppCompatActivity
     EditTaskScreenContent(
@@ -137,12 +147,6 @@ fun EditTaskScreenContent(
         CardEditors(task, onDateChange, onTimeChange, activity)
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
 
-//        PriorityDropdownMenu(
-//            onPriorityChange = { newPriority ->
-//                selectedPriority = newPriority
-//                onPriorityChange(newPriority)
-//            },
-//        )
         var expanded by remember { mutableStateOf(false) }
         Text(
             text = stringResource(R.string.priority),
@@ -236,58 +240,6 @@ private fun CardEditors(
         content = task.dueTime,
         onClick = { showTimePicker(activity, onTimeChange) })
 }
-
-@Composable
-fun PriorityDropdownMenu(
-    selectedPriority: TaskPriority = TaskPriority.None,
-    onPriorityChange: (TaskPriority) -> Unit
-) {
-    var expanded by remember { mutableStateOf(false) }
-
-    Box(modifier = Modifier.fillMaxWidth()) {
-        Button(
-            onClick = { expanded = true },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    modifier = Modifier
-                        .size(16.dp)
-                        .background(selectedPriority.color, CircleShape)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(text = selectedPriority.label)
-            }
-        }
-
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            TaskPriority.entries.forEach { priority ->
-                DropdownMenuItem(
-                    onClick = {
-                        onPriorityChange(priority)
-                        expanded = false
-                    },
-                    text = {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Box(
-                                modifier = Modifier
-                                    .size(16.dp)
-                                    .background(priority.color, CircleShape)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(text = priority.label)
-                        }
-                    }
-                )
-            }
-        }
-    }
-}
-
 
 private fun showDatePicker(activity: AppCompatActivity?, onDateChange: (Long) -> Unit) {
     val picker = MaterialDatePicker.Builder.datePicker().build()

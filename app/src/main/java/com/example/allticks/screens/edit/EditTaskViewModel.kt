@@ -66,6 +66,7 @@ class EditTaskViewModel @Inject constructor(
             popUpScreen()
         }
     }
+
     fun onDeleteTaskClick(popUpScreen: () -> Unit) {
         launchCatching {
             storageService.delete(task.value.id)

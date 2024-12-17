@@ -56,5 +56,9 @@ class AccountServiceImpl @Inject constructor(
             auth.currentUser!!.delete()
         }
         auth.signOut()
-        }
+    }
+    override suspend fun sendRecoveryEmail(email: String) {
+        auth.sendPasswordResetEmail(email).await()
+    }
+
 }

@@ -10,5 +10,6 @@ const val CALENDAR_SCREEN = "CalendarScreen"
 const val EDIT_TASK_SCREEN = "EditTaskScreen"
 
 const val TASK_ID = "taskId"
+const val DUE_DATE = "dueDate"
 const val TASK_ID_ARG = "?$TASK_ID={$TASK_ID}"
 

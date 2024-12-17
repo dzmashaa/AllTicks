@@ -125,16 +125,22 @@ fun NavGraphBuilder.allTicksGraph(appState: AllTicksAppState) {
         TaskScreen(openScreen = { route -> appState.navigate(route) })
     }
     composable(CALENDAR_SCREEN) {
-        CalendarScreen()
+        CalendarScreen(openScreen = { route -> appState.navigate(route) })
     }
     composable(
-        route = "$EDIT_TASK_SCREEN$TASK_ID_ARG",
+        route = "$EDIT_TASK_SCREEN$TASK_ID_ARG&dueDate={dueDate}",
     arguments = listOf(navArgument(TASK_ID) {
         nullable = true
         defaultValue = null
-    })
+    },
+        navArgument("dueDate") {
+            nullable = true
+            defaultValue = null
+        })
     ) {
+        val dueDate = it.arguments?.getString("dueDate")
         EditTaskScreen(
+            dueDate = dueDate,
             popUpScreen = { appState.popUp() }
         )
     }
