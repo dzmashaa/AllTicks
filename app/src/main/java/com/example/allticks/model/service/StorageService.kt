@@ -4,9 +4,11 @@ import com.example.allticks.model.Task
 import kotlinx.coroutines.flow.Flow
 
 interface StorageService {
-    val tasks: Flow<List<Task>>
-    suspend fun getTask(taskId: String): Task?
-    suspend fun save(task: Task): String
-    suspend fun update(task: Task)
-    suspend fun delete(taskId: String)
+  val tasks: Flow<List<Task>>
+  suspend fun getTask(taskId: String): Task?
+  suspend fun save(task: Task): String
+  suspend fun update(task: Task)
+  suspend fun delete(taskId: String)
+  suspend fun updateUserCategories(userId: String, categories: List<String>)
+  suspend fun getUserCategories(userId: String): List<String>?
 }

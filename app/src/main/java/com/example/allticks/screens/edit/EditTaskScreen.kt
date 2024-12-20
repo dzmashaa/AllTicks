@@ -11,10 +11,8 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -25,6 +23,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,177 +47,208 @@ import com.example.allticks.common.composable.CancelButton
 import com.example.allticks.common.composable.ConfirmButton
 import com.example.allticks.model.Task
 import com.example.allticks.model.TaskPriority
+import com.example.allticks.screens.profile.ProfileViewModel
 import com.example.allticks.ui.theme.AllTicksTheme
 import com.example.allticks.ui.theme.backgroundLight
 import com.example.allticks.ui.theme.buttonLightColor
 import com.example.allticks.ui.theme.primaryLight
+import com.example.allticks.ui.theme.textColor
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-
 @Composable
 fun EditTaskScreen(
     dueDate: String?,
     popUpScreen: () -> Unit,
+    profileViewModel: ProfileViewModel = hiltViewModel(),
     viewModel: EditTaskViewModel = hiltViewModel()
 ) {
-    LaunchedEffect(dueDate) {
-        if (dueDate != null && viewModel.task.value.id.isBlank()) {
-            SimpleDateFormat("EEE, d MMM yyyy", Locale.ENGLISH).parse(dueDate)
-                ?.let { viewModel.onDateChange(it.time) }
-        }
+  LaunchedEffect(dueDate) {
+    if (dueDate != null && viewModel.task.value.id.isBlank()) {
+      SimpleDateFormat("EEE, d MMM yyyy", Locale.ENGLISH).parse(dueDate)?.let {
+        viewModel.onDateChange(it.time)
+      }
     }
-    val task by viewModel.task
-    val activity = LocalContext.current as AppCompatActivity
-    EditTaskScreenContent(
-        task = task,
-        isNewTask = task.id.isBlank(),
-        onDoneClick = { viewModel.onDoneClick(popUpScreen) },
-        onTitleChange = viewModel::onTitleChange,
-        onDescriptionChange = viewModel::onDescriptionChange,
-        onDateChange = viewModel::onDateChange,
-        onTimeChange = viewModel::onTimeChange,
-        onDeleteClick = { viewModel.onDeleteTaskClick(popUpScreen) },
-        onPriorityChange = viewModel::onPriorityChange,
-        activity = activity
-    )
+  }
+  val task by viewModel.task
+  val activity = LocalContext.current as AppCompatActivity
+  val categories by profileViewModel.categories.collectAsState()
+  EditTaskScreenContent(
+      task = task,
+      categories = categories,
+      isNewTask = task.id.isBlank(),
+      onDoneClick = { viewModel.onDoneClick(popUpScreen) },
+      onTitleChange = viewModel::onTitleChange,
+      onDescriptionChange = viewModel::onDescriptionChange,
+      onDateChange = viewModel::onDateChange,
+      onTimeChange = viewModel::onTimeChange,
+      onDeleteClick = { viewModel.onDeleteTaskClick(popUpScreen) },
+      onPriorityChange = viewModel::onPriorityChange,
+      onCategoryChange = viewModel::onCategoryChange,
+      activity = activity)
 }
 
 @Composable
 fun EditTaskScreenContent(
     modifier: Modifier = Modifier,
     task: Task,
+    categories: List<String>,
     isNewTask: Boolean,
     onDoneClick: () -> Unit,
     onTitleChange: (String) -> Unit,
     onDescriptionChange: (String) -> Unit,
     onDateChange: (Long) -> Unit,
     onTimeChange: (Int, Int) -> Unit,
-    onDeleteClick:() ->Unit,
+    onDeleteClick: () -> Unit,
     onPriorityChange: (String) -> Unit,
+    onCategoryChange: (String) -> Unit,
     activity: AppCompatActivity?
 ) {
-    var selectedPriority by remember(task.taskPriority) { mutableStateOf(task.taskPriority) }
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
-            .verticalScroll(
-                rememberScrollState()
-            )
-            .background(
-                brush = Brush.linearGradient(
-                    colors = listOf(primaryLight, backgroundLight)
-                )
-            )
-            .padding(16.dp, 8.dp)
-    ) {
+  var selectedPriority by remember(task.taskPriority) { mutableStateOf(task.taskPriority) }
+
+  Column(
+      modifier =
+          Modifier.fillMaxWidth()
+              .fillMaxHeight()
+              .verticalScroll(rememberScrollState())
+              .background(
+                  brush = Brush.linearGradient(colors = listOf(primaryLight, backgroundLight)))
+              .padding(16.dp, 8.dp)) {
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = stringResource(R.string.edit_task),
-                style = MaterialTheme.typography.titleLarge,
-            )
+        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+          Text(
+              text = stringResource(if (isNewTask) R.string.create_task else R.string.edit_task),
+              style = MaterialTheme.typography.titleLarge,
+          )
         }
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
         Text(
             text = stringResource(R.string.title),
             style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Start,
-            modifier = Modifier.padding(start = 30.dp)
-        )
+            modifier = Modifier.padding(start = 30.dp))
         BasicField(R.string.title, task.title, onTitleChange)
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
         Text(
             text = stringResource(R.string.description),
             style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Start,
-            modifier = Modifier.padding(start = 24.dp)
-        )
+            modifier = Modifier.padding(start = 24.dp))
         BasicField(R.string.description, task.description, onDescriptionChange)
+
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
+
+        var expanded by remember { mutableStateOf(false) }
+        var expanded2 by remember { mutableStateOf(false) }
+
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
+          Column {
+            Text(
+                text = stringResource(R.string.priority),
+                style = MaterialTheme.typography.bodyLarge,
+                textAlign = TextAlign.Start,
+                modifier = Modifier.padding(start = 24.dp))
+            Box(modifier = Modifier.padding(16.dp, 8.dp)) {
+              Button(
+                  onClick = { expanded = true },
+                  modifier = Modifier.width(140.dp),
+                  colors =
+                      ButtonDefaults.buttonColors(
+                          containerColor = backgroundLight, contentColor = buttonLightColor),
+              ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                  Text(text = selectedPriority.label)
+                  Spacer(modifier = Modifier.width(8.dp))
+                  Icon(
+                      painter = painterResource(id = R.drawable.baseline_star_24),
+                      contentDescription = stringResource(id = R.string.priority),
+                      tint = selectedPriority.color)
+                }
+              }
+
+              DropdownMenu(
+                  expanded = expanded,
+                  onDismissRequest = { expanded = false },
+                  modifier = Modifier.background(backgroundLight),
+              ) {
+                TaskPriority.entries.forEach { priority ->
+                  DropdownMenuItem(
+                      onClick = {
+                        selectedPriority = priority
+                        onPriorityChange(priority.label)
+                        expanded = false
+                      },
+                      modifier =
+                          Modifier.padding(horizontal = 4.dp, vertical = 4.dp)
+                              .background(backgroundLight),
+                      text = {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween) {
+                              Text(text = priority.label)
+                              Spacer(modifier = Modifier.width(8.dp))
+                              Icon(
+                                  painter = painterResource(id = R.drawable.baseline_star_24),
+                                  contentDescription = stringResource(id = R.string.priority),
+                                  tint = priority.color)
+                            }
+                      })
+                }
+              }
+            }
+          }
+          Column {
+            Text(
+                text = stringResource(R.string.category),
+                style = MaterialTheme.typography.bodyLarge,
+                textAlign = TextAlign.Start,
+                modifier = Modifier.padding(start = 24.dp))
+            Box(modifier = Modifier.padding(16.dp, 8.dp)) {
+              Button(
+                  onClick = { expanded2 = !expanded2 },
+                  modifier = Modifier.width(150.dp),
+                  colors = ButtonDefaults.buttonColors(containerColor = backgroundLight)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                      Text(task.category.ifEmpty { categories.first() })
+                      Icon(
+                          painter = painterResource(id = R.drawable.baseline_arrow_drop_down_24),
+                          contentDescription = stringResource(id = R.string.category),
+                          tint = textColor)
+                    }
+                    DropdownMenu(
+                        expanded = expanded2,
+                        onDismissRequest = { expanded2 = false },
+                        modifier = Modifier.background(backgroundLight).padding(8.dp)) {
+                          categories.forEach { category ->
+                            DropdownMenuItem(
+                                text = { Text(text = category) },
+                                onClick = {
+                                  onCategoryChange(category)
+                                  expanded2 = false
+                                })
+                          }
+                        }
+                  }
+            }
+          }
+        }
 
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
         CardEditors(task, onDateChange, onTimeChange, activity)
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
-
-        var expanded by remember { mutableStateOf(false) }
-        Text(
-            text = stringResource(R.string.priority),
-            style = MaterialTheme.typography.bodyLarge,
-            textAlign = TextAlign.Start,
-            modifier = Modifier.padding(start = 24.dp)
-        )
-        Box(modifier = Modifier.fillMaxWidth().padding(16.dp, 8.dp)) {
-            Button(
-                onClick = { expanded = true },
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = backgroundLight, contentColor = buttonLightColor ),
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = selectedPriority.label)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Icon(painter = painterResource(id = R.drawable.baseline_star_24),
-                        contentDescription = stringResource(id = R.string.priority),
-                        tint = selectedPriority.color)
-                }
-            }
-
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false },
-                modifier = Modifier.background(backgroundLight),
-            ) {
-                TaskPriority.entries.forEach { priority ->
-                    DropdownMenuItem(
-                        onClick = {
-                            selectedPriority = priority
-                            onPriorityChange(priority.label)
-                            expanded = false
-                        },
-                        modifier = Modifier
-                            .padding(
-                                horizontal = 4.dp,
-                                vertical = 4.dp)
-                            .background(backgroundLight),
-                        text = {
-                            Row(verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween) {
-                                Text(text = priority.label)
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Icon(painter = painterResource(id = R.drawable.baseline_star_24),
-                                    contentDescription = stringResource(id = R.string.priority),
-                                    tint = priority.color)
-                            }
-                        }
-                    )
-                }
-            }
+        if (isNewTask) {
+          BasicButton(text = R.string.create) { onDoneClick() }
+        } else {
+          Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+            CancelButton(text = R.string.delete) { onDeleteClick() }
+            Spacer(modifier = Modifier.width(16.dp))
+            ConfirmButton(text = R.string.save) { onDoneClick() }
+          }
         }
-
-        if(isNewTask){
-            BasicButton(text = R.string.create) { onDoneClick() }
-        }
-        else{
-            Row( modifier = Modifier
-                .fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center) {
-                CancelButton(text = R.string.delete) {
-                   onDeleteClick()
-                }
-                Spacer(modifier = Modifier.width(16.dp))
-                ConfirmButton(text = R.string.save) {
-                    onDoneClick()
-                }
-            }
-        }
-    }
-
+      }
 }
 
 @Composable
@@ -228,58 +258,55 @@ private fun CardEditors(
     onTimeChange: (Int, Int) -> Unit,
     activity: AppCompatActivity?
 ) {
-    BasicCard(
-        title = R.string.date,
-        icon = R.drawable.baseline_calendar_month_24,
-        content = task.dueDate,
-        onClick = { showDatePicker(activity, onDateChange) })
-    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
-    BasicCard(
-        title = R.string.time,
-        icon = R.drawable.baseline_access_time_24,
-        content = task.dueTime,
-        onClick = { showTimePicker(activity, onTimeChange) })
+  BasicCard(
+      title = R.string.date,
+      icon = R.drawable.baseline_calendar_month_24,
+      content = task.dueDate,
+      onClick = { showDatePicker(activity, onDateChange) })
+  Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
+  BasicCard(
+      title = R.string.time,
+      icon = R.drawable.baseline_access_time_24,
+      content = task.dueTime,
+      onClick = { showTimePicker(activity, onTimeChange) })
 }
 
 private fun showDatePicker(activity: AppCompatActivity?, onDateChange: (Long) -> Unit) {
-    val picker = MaterialDatePicker.Builder.datePicker().build()
+  val picker = MaterialDatePicker.Builder.datePicker().build()
 
-    activity?.let {
-        picker.show(it.supportFragmentManager, picker.toString())
-        picker.addOnPositiveButtonClickListener { timeInMillis -> onDateChange(timeInMillis) }
-    }
+  activity?.let {
+    picker.show(it.supportFragmentManager, picker.toString())
+    picker.addOnPositiveButtonClickListener { timeInMillis -> onDateChange(timeInMillis) }
+  }
 }
 
 private fun showTimePicker(activity: AppCompatActivity?, onTimeChange: (Int, Int) -> Unit) {
-    val picker = MaterialTimePicker.Builder().setTimeFormat(TimeFormat.CLOCK_24H).build()
+  val picker = MaterialTimePicker.Builder().setTimeFormat(TimeFormat.CLOCK_24H).build()
 
-    activity?.let {
-        picker.show(it.supportFragmentManager, picker.toString())
-        picker.addOnPositiveButtonClickListener { onTimeChange(picker.hour, picker.minute) }
-    }
+  activity?.let {
+    picker.show(it.supportFragmentManager, picker.toString())
+    picker.addOnPositiveButtonClickListener { onTimeChange(picker.hour, picker.minute) }
+  }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun EditTaskScreenPreview() {
-    val task = Task(
-        title = "Task title",
-        description = "Task description",
-        flag = true
-    )
-
-    AllTicksTheme {
-        EditTaskScreenContent(
-            task = task,
-            isNewTask = false,
-            onDoneClick = { },
-            onTitleChange = { },
-            onDescriptionChange = { },
-            onDateChange = { },
-            onDeleteClick = { },
-            onTimeChange = { _, _ -> },
-            onPriorityChange = { },
-            activity = null
-        )
-    }
+  val task = Task(title = "Task title", description = "Task description")
+  val categories = listOf("Work", "Personal")
+  AllTicksTheme {
+    EditTaskScreenContent(
+        task = task,
+        categories = categories,
+        isNewTask = false,
+        onDoneClick = {},
+        onTitleChange = {},
+        onDescriptionChange = {},
+        onDateChange = {},
+        onDeleteClick = {},
+        onTimeChange = { _, _ -> },
+        onPriorityChange = {},
+        activity = null,
+        onCategoryChange = {})
+  }
 }

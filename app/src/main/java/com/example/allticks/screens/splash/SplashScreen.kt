@@ -30,10 +30,9 @@ fun SplashScreen(
     openAndPopUp: (String, String) -> Unit,
     viewModel: SplashViewModel = hiltViewModel()
 ) {
-    SplashScreenContent(
-        onAppStart = { viewModel.onAppStart(openAndPopUp) },
-        shouldShowError = viewModel.showError.value
-    )
+  SplashScreenContent(
+      onAppStart = { viewModel.onAppStart(openAndPopUp) },
+      shouldShowError = viewModel.showError.value)
 }
 
 @Composable
@@ -42,44 +41,33 @@ fun SplashScreenContent(
     onAppStart: () -> Unit,
     shouldShowError: Boolean
 ) {
-    Column(
-        modifier =
-        modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
-            .background(
-                brush = Brush.linearGradient(
-                    colors = listOf(primaryLight, backgroundLight)
-                )
-            )
-            .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ){
+  Column(
+      modifier =
+          modifier
+              .fillMaxWidth()
+              .fillMaxHeight()
+              .background(
+                  brush = Brush.linearGradient(colors = listOf(primaryLight, backgroundLight)))
+              .verticalScroll(rememberScrollState()),
+      verticalArrangement = Arrangement.Center,
+      horizontalAlignment = Alignment.CenterHorizontally) {
         if (shouldShowError) {
-            Text(text = stringResource(R.string.generic_error))
+          Text(text = stringResource(R.string.generic_error))
 
-            BasicButton(R.string.try_again) { onAppStart() }
+          BasicButton(R.string.try_again) { onAppStart() }
         } else {
-            CircularProgressIndicator(
-                color = secondaryLight)
+          CircularProgressIndicator(color = secondaryLight)
         }
-    }
+      }
 
-    LaunchedEffect(true) {
-        delay(500)
-        onAppStart()
-    }
-
+  LaunchedEffect(true) {
+    delay(500)
+    onAppStart()
+  }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun SplashScreenPreview() {
-    AllTicksTheme {
-        SplashScreenContent(
-            onAppStart = { },
-            shouldShowError = false
-        )
-    }
+  AllTicksTheme { SplashScreenContent(onAppStart = {}, shouldShowError = false) }
 }

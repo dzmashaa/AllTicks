@@ -35,16 +35,16 @@ fun SignUpScreen(
     openAndPopUp: (String, String) -> Unit,
     viewModel: SignUpViewModel = hiltViewModel()
 ) {
-    val uiState by viewModel.uiState
+  val uiState by viewModel.uiState
 
-    SignUpScreenContent(
-        uiState = uiState,
-        onEmailChange = viewModel::onEmailChange,
-        onPasswordChange = viewModel::onPasswordChange,
-        onRepeatPasswordChange = viewModel::onRepeatPasswordChange,
-        onSignUpClick = { viewModel.onSignUpClick(openAndPopUp) },
-        onLogInClick = { viewModel.onLogInClick(openAndPopUp) },
-    )
+  SignUpScreenContent(
+      uiState = uiState,
+      onEmailChange = viewModel::onEmailChange,
+      onPasswordChange = viewModel::onPasswordChange,
+      onRepeatPasswordChange = viewModel::onRepeatPasswordChange,
+      onSignUpClick = { viewModel.onSignUpClick(openAndPopUp) },
+      onLogInClick = { viewModel.onLogInClick(openAndPopUp) },
+  )
 }
 
 @Composable
@@ -55,23 +55,19 @@ fun SignUpScreenContent(
     onPasswordChange: (String) -> Unit,
     onRepeatPasswordChange: (String) -> Unit,
     onSignUpClick: () -> Unit,
-    onLogInClick:() -> Unit
+    onLogInClick: () -> Unit
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
-            .background(
-                brush = Brush.linearGradient(
-                    colors = listOf(primaryLight, backgroundLight)
-                )
-            )
-            .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ){
-        Text(text = stringResource(R.string.sing_up),
-            style = MaterialTheme.typography.titleLarge)
+  Column(
+      modifier =
+          modifier
+              .fillMaxWidth()
+              .fillMaxHeight()
+              .background(
+                  brush = Brush.linearGradient(colors = listOf(primaryLight, backgroundLight)))
+              .verticalScroll(rememberScrollState()),
+      verticalArrangement = Arrangement.Center,
+      horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(text = stringResource(R.string.sing_up), style = MaterialTheme.typography.titleLarge)
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
         EmailField(uiState.email, onEmailChange)
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
@@ -83,26 +79,21 @@ fun SignUpScreenContent(
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
 
         BasicButton(R.string.create_account) { onSignUpClick() }
-        BasicTextButton(text = R.string.proposal_log_in) {
-            onLogInClick()
-        }
-    }
+        BasicTextButton(text = R.string.proposal_log_in) { onLogInClick() }
+      }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun SignUpScreenPreview() {
-    val uiState = SignUpUiState(
-        email = "email@test.com"
-    )
-    AllTicksTheme {
-        SignUpScreenContent(
-            uiState = uiState,
-            onEmailChange = { },
-            onPasswordChange = { },
-            onRepeatPasswordChange = { },
-            onSignUpClick = { },
-            onLogInClick = {}
-        )
-    }
+  val uiState = SignUpUiState(email = "email@test.com")
+  AllTicksTheme {
+    SignUpScreenContent(
+        uiState = uiState,
+        onEmailChange = {},
+        onPasswordChange = {},
+        onRepeatPasswordChange = {},
+        onSignUpClick = {},
+        onLogInClick = {})
+  }
 }

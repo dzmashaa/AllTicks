@@ -26,71 +26,62 @@ import com.example.allticks.ui.theme.textColor
 
 @Composable
 fun BasicTextButton(@StringRes text: Int, modifier: Modifier = Modifier, action: () -> Unit) {
-    TextButton(onClick = action, modifier = modifier) {
-        Text(text = stringResource(text),
-            style = MaterialTheme.typography.bodySmall,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)))
-    }
+  TextButton(onClick = action, modifier = modifier) {
+    Text(
+        text = stringResource(text),
+        style = MaterialTheme.typography.bodySmall,
+        textAlign = TextAlign.Center,
+        modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)))
+  }
 }
 
 @Composable
 fun BasicButton(@StringRes text: Int, action: () -> Unit) {
-    Button(modifier = Modifier
-        .fillMaxWidth()
-        .height(54.dp)
-        .padding(
-            horizontal = 64.dp,
-            vertical = 4.dp
-        ),
-        onClick = action,
-        colors = ButtonDefaults.buttonColors(containerColor = buttonColor, contentColor = textColor),
-    ) {
-        Text(text = stringResource(text),
-            style = MaterialTheme.typography.bodyMedium,
-            textAlign = TextAlign.Center)
-    }
+  Button(
+      modifier = Modifier.fillMaxWidth().height(54.dp).padding(horizontal = 64.dp, vertical = 4.dp),
+      onClick = action,
+      colors = ButtonDefaults.buttonColors(containerColor = buttonColor, contentColor = textColor),
+  ) {
+    Text(
+        text = stringResource(text),
+        style = MaterialTheme.typography.bodyMedium,
+        textAlign = TextAlign.Center)
+  }
 }
 
 @Composable
 fun ConfirmButton(@StringRes text: Int, action: () -> Unit) {
-    Button(modifier = Modifier
-        .height(54.dp)
-        .padding(
-            horizontal = 4.dp,
-            vertical = 4.dp
-        ),
-        onClick = action,
-        colors = ButtonDefaults.buttonColors(containerColor = buttonColor, contentColor = textColor),
-    ) {
-        Text(text = stringResource(text),
-            style = MaterialTheme.typography.bodyMedium,
-            color = backgroundLight,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center)
-    }
+  Button(
+      modifier = Modifier.height(54.dp).padding(horizontal = 4.dp, vertical = 4.dp),
+      onClick = action,
+      colors = ButtonDefaults.buttonColors(containerColor = buttonColor, contentColor = textColor),
+  ) {
+    Text(
+        text = stringResource(text),
+        style = MaterialTheme.typography.bodyMedium,
+        color = backgroundLight,
+        fontWeight = FontWeight.Bold,
+        textAlign = TextAlign.Center)
+  }
 }
+
 @Composable
 fun CancelButton(@StringRes text: Int, action: () -> Unit) {
-    Button(modifier = Modifier
-        .height(54.dp)
-        .padding(
-            horizontal = 4.dp,
-            vertical = 4.dp
-        )
-        .border(
-            width = 2.dp,
-            color = buttonColor,
-            shape = MaterialTheme.shapes.extraLarge
-        ),
-        onClick = action,
-        colors = ButtonDefaults.buttonColors(containerColor = backgroundLight, contentColor = buttonLightColor ),
-    ) {
-        Text(text = stringResource(text),
-            style = MaterialTheme.typography.bodyMedium,
-            textAlign = TextAlign.Center,
-            color = buttonColor,
-            fontWeight = FontWeight.Bold
-        )
-    }
+  Button(
+      modifier =
+          Modifier.height(54.dp)
+              .padding(horizontal = 4.dp, vertical = 4.dp)
+              .border(width = 2.dp, color = buttonColor, shape = MaterialTheme.shapes.extraLarge),
+      onClick = action,
+      colors =
+          ButtonDefaults.buttonColors(
+              containerColor = backgroundLight, contentColor = buttonLightColor),
+  ) {
+    Text(
+        text = stringResource(text),
+        style = MaterialTheme.typography.bodyMedium,
+        textAlign = TextAlign.Center,
+        color = buttonColor,
+        fontWeight = FontWeight.Bold)
+  }
 }

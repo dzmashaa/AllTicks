@@ -1,5 +1,3 @@
 package com.example.allticks.screens.profile
 
-data class ProfileUiState(
-    val isAnonymousAccount: Boolean = true
-)
+data class ProfileUiState(val isAnonymousAccount: Boolean = true)

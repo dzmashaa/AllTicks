@@ -2,7 +2,7 @@
     <string name="app_name">AllTicks</string>
     <string name="login">Login</string>
     <string name="welcome_to">Welcome to </string>
-    <string name="sing_up">Sing up</string>
+    <string name="sing_up">Sign up</string>
     <string name="email">Email</string>
     <string name="user_name">Username</string>
     <string name="password">Password</string>
@@ -16,7 +16,7 @@
 
     <string name="empty_password_error">Password can not be empty</string>
     <string name="email_error">Please insert a valid email</string>
-    <string name="password_error">Your password should be at least six characters long an...</string>
+    <string name="password_error">The password must contain at least 6 characters, uppercase and lowercase letter and number</string>
     <string name="password_match_error">Passwords do not match\n</string>
     <string name="login_anonymously">Log in anonymously\n</string>
     <string name="tasks">Tasks</string>
@@ -43,4 +43,21 @@
     <string name="filter_by">Filter by</string>
     <string name="recovery_email_sent">Check your inbox for the recovery email</string>
     <string name="forgot_password">Forgot password?</string>
+    <string name="manage_categories">Manage categories</string>
+    <string name="add_category">Add category</string>
+    <string name="category">Category</string>
+    <string name="none">None</string>
+    <string name="enter_category_name">Enter category name</string>
+    <string name="new_category">New category</string>
+    <string name="add">Add</string>
+    <string name="default_web_client_id">992974808905-sindvu0dbhqvff0m5mn4re7blvtj45q0.apps.googleusercontent.com</string>
+    <string name="login_with_google">Continue with Google</string>
+    <string name="login_with_email">Login with email</string>
+    <string name="login_google">Login with Google</string>
+    <string name="unknown_error">Uncknown error</string>
+    <string name="email_already_in_use_error">Email already in use</string>
+    <string name="task_title_empty">Task title can not be empty</string>
+    <string name="category_too_long">Category can not contain more than 10 characters</string>
+    <string name="create_task">Create task</string>
+
 </resources>

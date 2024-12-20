@@ -9,11 +9,11 @@ data class Task(
     val dueDate: String = "",
     val dueTime: String = "",
     val description: String = "",
-    val flag: Boolean = false,
+    val category: String = "",
     val completed: Boolean = false,
     val createdAt: Long = System.currentTimeMillis(),
     val userId: String = ""
 ) {
-    val taskPriority: TaskPriority
-        get() = TaskPriority.fromString(priority)
+  val taskPriority: TaskPriority
+    get() = TaskPriority.fromString(priority)
 }
