@@ -16,4 +16,4 @@ To install the application, follow these steps:
 
 ## Running the Application
 
-Once installed, you can open the application from your device's app drawer. The app will be listed as **"AnyTime"**.
+Once installed, you can open the application from your device's app drawer. The app will be listed as **"AllTicks"**.
